@@ -18,8 +18,8 @@ ACTIONS = ['left', 'right']     # available actions
 EPSILON = 0.9   # greedy police
 ALPHA = 0.1     # learning rate
 GAMMA = 0.9    # discount factor
-MAX_EPISODES = 13   # maximum episodes
-FRESH_TIME = 0.3    # fresh time for one move
+MAX_EPISODES = 5   # maximum episodes ; used to be 13
+FRESH_TIME = 0.01    # fresh time for one move ;used to be 0.3
 
 
 def build_q_table(n_states, actions):
@@ -84,17 +84,25 @@ def rl():
         update_env(S, episode, step_counter)
         while not is_terminated:
 
+            print(q_table)
             A = choose_action(S, q_table)
+            print("当前状态S  "+str(S))
+            print("aciton  "+A)
             S_, R = get_env_feedback(S, A)  # take action & get next state and reward
+            print("S_  "+str(S_))
+            print("奖励 "+str(R))
             q_predict = q_table.loc[S, A]
+            print("q_predict  "+str(q_predict))
             if S_ != 'terminal':
                 q_target = R + GAMMA * q_table.iloc[S_, :].max()   # next state is not terminal
             else:
                 q_target = R     # next state is terminal
                 is_terminated = True    # terminate this episode
 
+            print("q_target  "+str(q_target))
             q_table.loc[S, A] += ALPHA * (q_target - q_predict)  # update
             S = S_  # move to next state
+            print(S)
 
             update_env(S, episode, step_counter+1)
             step_counter += 1
